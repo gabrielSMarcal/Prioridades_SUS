@@ -61,7 +61,7 @@ class EmpateBreaker:
             # Se sinais vitais pioram, aumenta o fator
             if l2.get('spo2', 100) < l1.get('spo2', 100): tendencia += 0.5
             if l2.get('escala_dor', 0) > l1.get('escala_dor', 0): tendencia += 0.3
-            if l2.get('glasgow') < l1.get('glasgow', 15): tendencia += 0.4
+            if l2.get('glasgow', 15) < l1.get('glasgow', 15): tendencia += 0.4
             
         # 3. Fator de Vulnerabilidade;
         vulnetabilidade = 1.2 if paciente.vuleravel else 1.0
