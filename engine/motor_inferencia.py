@@ -127,6 +127,9 @@ class MotorInferencia:
                 paciente.atualizar_prioridade(max(1, paciente.prioridade_atual - 1), 'Piora clínica simultânea')
                 self.log_inferencia(paciente.id, 'E2', 'Elevação Prioridade', f'{piora_cont} sinais vitais em piora')
                 
+        # E3: Violação de SLA do nível atual;
+        self._validar_regra_sla(paciente)
+                
         # E4: Vulnerável + Temperatura subiu > 1ºC;
         if paciente.vuleravel and paciente.get_penultima_leitura():
             t_atual = paciente.get_ultima_leitura().get('temperatura', 0)
@@ -140,8 +143,8 @@ class MotorInferencia:
         Conta quantos sinais vitais pioraram entre as duas últimas leituras;
         '''
         
-        l1 = paciente.get_ultima_leitura()
-        l2 = paciente.get_penultima_leitura()
+        l1 = paciente.get_penultima_leitura()
+        l2 = paciente.get_ultima_leitura()
         cont = 0
         
         # SpO2 caiu
@@ -155,6 +158,30 @@ class MotorInferencia:
         
         return cont
         
+    def _validar_regra_sla(self, paciente: Paciente):
+        '''
+        Verifica se o paciente aguarda além do SLA do seu nível atual;
+        '''
+        
+        if not paciente.get_ultima_leitura():
+            return
+
+        try:
+            h_entrada = datetime.strptime(paciente.hora_entrada, '%H:%M')
+            h_atual = datetime.strptime(paciente.get_ultima_leitura()['hora'], '%H:%M')
+            espera = (h_atual - h_entrada).total_seconds() / 60
+            
+            sla_maximo = SLA_TEMPOS.get(paciente.prioridade_atual, 120)
+            
+            if espera > sla_maximo:
+                paciente.violacoes_sla += 1
+                self.log_inferencia(paciente.id, 'E3', 'Alerta de Violação', f'Paciente aguarda há {int(espera)} min (SLA: {sla_maximo} min)')
+                
+                # E5: Duas violações de SLA;
+                if paciente.violacoes_sla >= 2:
+                    self.log_inferencia(paciente.id, 'E5', 'Protocolo Sobrecarga', 'Bloqueio de novas admissões e acionamento de protocolo')
+        except:
+            pass
         
     def _aplicar_regra_vulneravel(self, paciente: Paciente):
         '''
@@ -166,3 +193,5 @@ class MotorInferencia:
             paciente.atualizar_prioridade(paciente.prioridade_atual - 1, 'Grupo Vulnerável (Idade/Gestação/Deficiência)')
             self.log_inferencia(paciente.id, 'VULN', f'Nível {paciente.prioridade_atual}', 'Elevação por prioridade')
         
+    
+   

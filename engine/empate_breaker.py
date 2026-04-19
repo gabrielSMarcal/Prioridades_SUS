@@ -56,8 +56,8 @@ class EmpateBreaker:
         
         tendencia = 1.0
         if len(paciente.leituras) >= 2:
-            l1 = paciente.get_ultima_leitura()
-            l2 = paciente.get_penultima_leitura()
+            l1 = paciente.get_penultima_leitura()
+            l2 = paciente.get_ultima_leitura()
             # Se sinais vitais pioram, aumenta o fator
             if l2.get('spo2', 100) < l1.get('spo2', 100): tendencia += 0.5
             if l2.get('escala_dor', 0) > l1.get('escala_dor', 0): tendencia += 0.3

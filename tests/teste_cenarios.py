@@ -45,9 +45,11 @@ def rodar_teste():
     ]})
     
     # Cenário E5: Dupla violação de SLA (Regra E5)
-    # Simulado via logs, pois o sistema é reativo
-    print('Testando E5: Simulação de Alertas...')
-    sistema.motor.log_inferencia('E5-PAC', 'E5', 'Protocolo Sobrecarga', 'Dupla violação de SLA detectada')
+    print('Testando E5: Violação de SLA Real...')
+    p8 = sistema.add_paciente({'id': 'E5-PAC', 'idade': 30, 'hora_entrada': '10:00', 'leituras': [
+        {'hora': '10:40', 'escala_dor': 6}, # Nível 3, espera 40 min (SLA 30) -> 1ª violação
+        {'hora': '11:10', 'escala_dor': 6}  # Nível 3, espera 70 min (SLA 30) -> 2ª violação
+    ]})
 
     # Exibir Fila Final
     sistema.exibe_fila()

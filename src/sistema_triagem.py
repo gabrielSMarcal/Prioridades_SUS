@@ -23,9 +23,20 @@ class SistemaTriagem:
         Adiciona um novo paciente ao sistema e executa a triagem inicial;
         '''
         
+        # Extrai leituras iniciais para processar uma a uma;
+        leituras_iniciais = paciente_dado.get('leituras', [])
+        paciente_dado['leituras'] = [] # Limpa para o construtor
+        
         p = Paciente(paciente_dado)
         self.paciente.append(p)
-        self.motor.rodar_inferencia(p)
+        
+        if not leituras_iniciais:
+            self.motor.rodar_inferencia(p)
+        else:
+            for leitura in leituras_iniciais:
+                
+                p.add_leitura(leitura)
+                self.motor.rodar_inferencia(p)
         
         return p
     
@@ -73,7 +84,7 @@ class SistemaTriagem:
         print('\n' + '='*60)
         print(' FILA DE ATENDIMENTO - UPA SUS BRASIL '.center(60, '='))
         print('='*60)
-        print(f'{'ID':<15} | {'NÍVEL':<10} | {'COR':<10} | {'VULN':<5} | {'ESPERA'}')
+        print(f'{"ID":<15} | {"NÍVEL":<10} | {"COR":<10} | {"VULN":<5} | {"ESPERA"}')
         print('-' * 60)
         
         colors = {1: 'Vermelho', 2: 'Laranja', 3: 'Amarelo', 4: 'Verde', 5: 'Azul'}
@@ -96,7 +107,7 @@ class SistemaTriagem:
         
         for log in self.motor.logs:
             
-            print(f'[{log['hora']}] Paciente: {log['paciente']} | Regra: {log['regra']}')
-            print(f'  Conclusão: {log['conclusao']}')
-            print(f'  Detalhes: {log['detalhes']}')
+            print(f'[{log["hora"]}] Paciente: {log["paciente"]} | Regra: {log["regra"]}')
+            print(f'  Conclusão: {log["conclusao"]}')
+            print(f'  Detalhes: {log["detalhes"]}')
             print('-' * 60)
