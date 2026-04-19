@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 from datetime import datetime
 
 from models.paciente import Paciente
-from base_conhecimento import SLA_TEMPOS
+from .base_conhecimento import SLA_TEMPOS
 
 class EmpateBreaker:
     '''

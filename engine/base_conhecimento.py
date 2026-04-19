@@ -21,7 +21,9 @@ REGRAS_PRIMARIAS = [
             {'campo': 'glasgow', 'op': '<', 'valor': 14},
             {'campo': 'frequencia_cardiaca', 'op': '>', 'valor': 150},
             {'campo': 'frequencia_cardiaca', 'op': '<', 'valor': 40}
-        ]
+        ],
+        'operador_logico': 'OR',
+        'descricao': 'Muito urgente: Sinais vitais críticos'
     },
     {
         'id': 'R3',
@@ -32,7 +34,9 @@ REGRAS_PRIMARIAS = [
             {'campo': 'vomitos_por_hora', 'op': '>=', 'valor': 3},
             {'campo': 'frequencia_cardiaca', 'op': 'range', 'valor': [120, 150]},
             {'campo': 'frequencia_cardiaca', 'op': 'range', 'valor': [40, 50]}
-        ]
+        ],
+        'operador_logico': 'OR',
+        'descricao': 'Urgente: Febre alta, dor moderada ou vômitos'
     },
     {
         'id': 'R4',
@@ -76,22 +80,22 @@ REGRAS_SECUNDARIAS = [
 
 #Configuração do grafo para Urgências
 GRAFO_URGENCIAS = {
-    "nodes": {
-        "PARADA": 1.0,
-        "SPO2_CRITICO": 2.0,
-        "DOR_INTENSA": 2.1,
-        "GLASGOW_BAIXO": 2.2,
-        "FC_CRITICA": 2.3,
-        "FEBRE_ALTA": 3.0,
-        "DOR_MODERADA": 3.1,
-        "VOMITOS": 3.2,
-        "FC_ALTERADA": 3.3,
-        "DOR_LEVE": 4.0,
-        "VULNERAVEL": -0.5 # Reduz o valor numérico (aumenta prioridade)
+    'nodes': {
+        'PARADA': 1.0,
+        'SPO2_CRITICO': 2.0,
+        'DOR_INTENSA': 2.1,
+        'GLASGOW_BAIXO': 2.2,
+        'FC_CRITICA': 2.3,
+        'FEBRE_ALTA': 3.0,
+        'DOR_MODERADA': 3.1,
+        'VOMITOS': 3.2,
+        'FC_ALTERADA': 3.3,
+        'DOR_LEVE': 4.0,
+        'VULNERAVEL': -0.5 # Reduz o valor numérico (aumenta prioridade)
     },
-    "edges": [
-        ("SPO2_CRITICO", "FC_CRITICA", 0.5), # Conexão aumenta urgência
-        ("FEBRE_ALTA", "VOMITOS", 0.3)
+    'edges': [
+        ('SPO2_CRITICO', 'FC_CRITICA', 0.5), # Conexão aumenta urgência
+        ('FEBRE_ALTA', 'VOMITOS', 0.3)
     ]
 }
 

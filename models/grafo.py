@@ -15,7 +15,7 @@ class Grafo:
         '''
         if ponto not in self._grafo:
             self._grafo[ponto] = {}
-            self._peso_nos[ponto] = peso
+            self._peso_node[ponto] = peso
     
     def add_ponto_conexao(self, u: Any, v: Any, peso: float = 1.0) -> None:
         '''

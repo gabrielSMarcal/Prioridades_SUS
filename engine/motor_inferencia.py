@@ -3,7 +3,7 @@ from datetime import datetime
 
 from models.paciente import Paciente
 from models.grafo import Grafo
-from base_conhecimento import REGRAS_PRIMARIAS, REGRAS_SECUNDARIAS, GRAFO_URGENCIAS, SLA_TEMPOS
+from .base_conhecimento import REGRAS_PRIMARIAS, REGRAS_SECUNDARIAS, GRAFO_URGENCIAS, SLA_TEMPOS
 
 class MotorInferencia:
     '''
@@ -71,7 +71,7 @@ class MotorInferencia:
             
             if match:
                 paciente.atualizar_prioridade(regra['nivel'], regra['descricao'])
-                self.log_inferencia(paciente.id, regra['id'], f'Nível {regra['nível']}', regra['descricao'])
+                self.log_inferencia(paciente.id, regra['id'], f'Nível {regra['nivel']}', regra['descricao'])
                 break  # Aplica a primeira regra que casar (maior prioridade)
             
     def _condicoes_regras_check(self, leitura: Dict[str, Any], regra: Dict[str, Any]) -> bool:
