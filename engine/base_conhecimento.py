@@ -1,5 +1,3 @@
-from typing import Any, Dict, List
-
 # Regras primárias de classificação de pacientes, baseadas em sinais vitais e sintomas;
 REGRAS_PRIMARIAS = [
     {

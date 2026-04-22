@@ -1,9 +1,4 @@
 from src.sistema_triagem import SistemaTriagem
-import sys
-import os
-
-# Adiciona o diretório atual ao path para importações;
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def main():
     sistema = SistemaTriagem()

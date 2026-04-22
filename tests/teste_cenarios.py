@@ -1,7 +1,6 @@
 import sys
 import os
 import time
-from datetime import datetime
 
 # Adiciona o diretório raiz ao path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
