@@ -79,12 +79,18 @@ class SistemaTriagem:
         '''
         Exibe a fila de atendimento formatada;
         '''
+
+        def nome_resumido(nome_completo: str) -> str:
+            partes = nome_completo.split()
+            if len(partes) >= 2:
+                return f'{partes[0]} {partes[1]}'
+            return nome_completo
         
         fila = self.get_fila()
         print('\n' + '='*60)
         print(' FILA DE ATENDIMENTO - UPA SUS BRASIL '.center(60, '='))
         print('='*60)
-        print(f'{"ID":<15} | {"NÍVEL":<10} | {"COR":<10} | {"VULN":<5} | {"ESPERA"}')
+        print(f'{"NOME":<15} | {"NÍVEL":<10} | {"COR":<10} | {"VULN":<5} | {"ESPERA"}')
         print('-' * 60)
         
         colors = {1: 'Vermelho', 2: 'Laranja', 3: 'Amarelo', 4: 'Verde', 5: 'Azul'}
@@ -92,7 +98,8 @@ class SistemaTriagem:
         for p in fila:
             
             vulneravel = 'Sim' if p.vuleravel else 'Não'
-            print(f'{p.id:<15} | {p.prioridade_atual:<10} | {colors[p.prioridade_atual]:<10} | {vulneravel:<5} | {p.hora_entrada}')
+            nome_exibicao = nome_resumido(p.id)
+            print(f'{nome_exibicao:<15} | {p.prioridade_atual:<10} | {colors[p.prioridade_atual]:<10} | {vulneravel:<5} | {p.hora_entrada}')
             
         print('='*60 + '\n')
         

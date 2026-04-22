@@ -2,24 +2,26 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 from .sistema_triagem import SistemaTriagem
 
-def exibir_referencias():
+
+def cor_prioridade(nivel: int) -> str:
     '''
-    Exibe os parâmetros médicos de referência para auxiliar a entrada de dados;
+    Retorna a cor de prioridade correspondente ao nível de triagem;
     '''
-    print("\n" + "-"*45)
-    print(" PARÂMETROS MÉDICOS DE REFERÊNCIA ".center(45, "-"))
-    print(" Glasgow: 15 (Normal) | < 14 (Crítico)")
-    print(" SpO2: 95-100% (Normal) | < 90% (Crítico)")
-    print(" FC: 60-100 bpm (Normal) | > 150 ou < 40 (Crítico)")
-    print(" Temperatura: 36.5°C (Normal) | > 39°C (Febre Alta)")
-    print(" Escala de Dor: 0 (Sem dor) | 10 (Máxima)")
-    print("-" * 45)
+    cores = {
+        1: 'Vermelho',
+        2: 'Laranja',
+        3: 'Amarelo',
+        4: 'Verde',
+        5: 'Azul'
+    }
+    return cores.get(nivel, 'Desconhecida')
+
 
 def obter_leitura_manual() -> Optional[Dict[str, Any]]:
     '''
     Coleta os sinais vitais do usuário via terminal com guias de referência;
     '''
-    exibir_referencias()
+    
     hora = datetime.now().strftime("%H:%M")
     print(f"Horário da leitura: {hora}")
     
@@ -83,7 +85,28 @@ def acao_atualizar_vituais(sistema: SistemaTriagem):
     '''
     print("\n" + "-"*30)
     print(" ATUALIZAR SINAIS VITAIS ".center(30, "-"))
-    nome_busca = input("Digite o nome completo do paciente: ")
+
+    if not sistema.paciente:
+        print("Nenhum paciente cadastrado para atualização.")
+        return
+
+    print("\nPacientes cadastrados:")
+    for i, paciente in enumerate(sistema.paciente, start=1):
+        cor = cor_prioridade(paciente.prioridade_atual)
+        print(f" {i}. {paciente.id} ({cor})")
+
+    try:
+        indice = int(input("Escolha o índice do paciente: "))
+    except ValueError:
+        print("\nErro: Informe um índice numérico válido.")
+        return
+
+    if indice < 1 or indice > len(sistema.paciente):
+        print("\nErro: Índice fora da faixa de pacientes listados.")
+        return
+
+    paciente_selecionado = sistema.paciente[indice - 1]
+    nome_busca = paciente_selecionado.id
     
     leitura = obter_leitura_manual()
     if leitura:

@@ -56,7 +56,7 @@ def main():
         print("="*60)
         print(" 1. Visualizar Fila de Atendimento")
         print(" 2. Cadastrar Novo Paciente")
-        print(" 3. Atualizar Sinais Vitais (por Nome)")
+        print(" 3. Atualizar Sinais Vitais de um Paciente")
         print(" 4. Ver Logs de Inferência")
         print(" 0. Sair")
         print("="*60)
