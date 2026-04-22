@@ -1,3 +1,4 @@
+
 # Regras primárias de classificação de pacientes, baseadas em sinais vitais e sintomas;
 REGRAS_PRIMARIAS = [
     {
@@ -8,7 +9,8 @@ REGRAS_PRIMARIAS = [
             {'campo': 'respirando', 'op': '==', 'valor': False}
         ],
         'operador_logico': 'OR',
-        'descricao': 'Emergencia: Parada cardiorrespiratória ou apneia'
+        'descricao': 'Emergencia: Parada cardiorrespiratória ou apneia',
+        'sintoma_grafo': 'PARADA'
     },
     {
         'id': 'R2',
@@ -21,7 +23,8 @@ REGRAS_PRIMARIAS = [
             {'campo': 'frequencia_cardiaca', 'op': '<', 'valor': 40}
         ],
         'operador_logico': 'OR',
-        'descricao': 'Muito urgente: Sinais vitais críticos'
+        'descricao': 'Muito urgente: Sinais vitais críticos',
+        'sintoma_grafo': ['SPO2_CRITICO', 'DOR_INTENSA', 'GLASGOW_BAIXO', 'FC_CRITICA']
     },
     {
         'id': 'R3',
@@ -34,16 +37,17 @@ REGRAS_PRIMARIAS = [
             {'campo': 'frequencia_cardiaca', 'op': 'range', 'valor': [40, 50]}
         ],
         'operador_logico': 'OR',
-        'descricao': 'Urgente: Febre alta, dor moderada ou vômitos'
+        'descricao': 'Urgente: Febre alta, dor moderada ou vômitos',
+        'sintoma_grafo': ['FEBRE_ALTA', 'DOR_MODERADA', 'VOMITOS', 'FC_ALTERADA']
     },
     {
         'id': 'R4',
         'nivel': 4,
         'condicoes': [
             {'campo': 'escala_dor', 'op': 'range', 'valor': [1, 4]}
-        ],
-        'operador_logico': 'OR',
-        'descricao': 'Baixa Prioridade: Dor leve ou queixa estável'
+        ],        'operador_logico': 'OR',
+        'descricao': 'Baixa Prioridade: Dor leve ou queixa estável',
+        'sintoma_grafo': 'DOR_LEVE'
     }
 ]
 

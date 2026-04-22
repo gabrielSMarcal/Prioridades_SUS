@@ -63,8 +63,3 @@ class Grafo:
         '''
         
         return ponto in self._grafo
-    
-        
-        
-
-    

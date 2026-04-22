@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from datetime import datetime
 from models.paciente import Paciente
+from models.grafo import Grafo
 from .base_conhecimento import REGRAS_PRIMARIAS, REGRAS_SECUNDARIAS, SLA_TEMPOS
 
 class MotorInferencia:
@@ -8,7 +9,8 @@ class MotorInferencia:
     Motor de Inferência por Encadeamento Progressivo (Forward Chaining);
     '''
     
-    def __init__(self):
+    def __init__(self, grafo: Grafo):
+        self.grafo = grafo
         self.logs = []
         # Mapeamento de tipos de regras secundárias para métodos internos;
         self._mapa_regras_secundarias = {
@@ -35,7 +37,7 @@ class MotorInferencia:
         '''
         Executa o ciclo de inferência completo para um paciente;
         '''
-        # 1. Aplica Regras Primárias (Manchester Base);
+        # 1. Aplica Regras Primárias (Manchester Base via Grafo);
         self._aplicar_regras_primarias(paciente)
         
         # 2. Aplica Regras Secundárias (Dinamicamente da Base de Conhecimento);
@@ -46,19 +48,59 @@ class MotorInferencia:
         
     def _aplicar_regras_primarias(self, paciente: Paciente):
         '''
-        Avalia as regras primárias baseadas na última leitura;
+        Avalia as regras primárias e calcula o peso via Grafo;
         '''
         leitura = paciente.get_ultima_leitura()
         if not leitura:
             return
             
+        nos_ativos = []
+        regras_disparadas = []
+        
+        # Identifica quais regras primárias casam e quais nós do grafo ativar;
         for regra in REGRAS_PRIMARIAS:
-            match = self._condicoes_regras_check(leitura, regra)
+            if self._condicoes_regras_check(leitura, regra):
+                regras_disparadas.append(regra)
+                sintoma = regra.get('sintoma_grafo')
+                if isinstance(sintoma, list):
+                    nos_ativos.extend(sintoma)
+                elif sintoma:
+                    nos_ativos.append(sintoma)
+        
+        if not nos_ativos:
+            # Se nada casar, assume nível 5 (Azul);
+            paciente.atualizar_prioridade(5, "Não urgente")
+            return
+
+        # Calcula o peso total usando o Grafo (Nós + Arestas);
+        soma_pesos = 0.0
+        for no in set(nos_ativos):
+            soma_pesos += self.grafo.get_peso_node(no)
             
-            if match:
-                paciente.atualizar_prioridade(regra['nivel'], regra['descricao'])
-                self.log_inferencia(paciente.id, regra['id'], f"Nível {regra['nivel']}", regra['descricao'])
-                break  # Aplica a primeira regra que casar (maior prioridade)
+        # Verifica bônus de conexões (arestas) entre nós ativos;
+        bonus_conexoes = 0.0
+        nos_unicos = list(set(nos_ativos))
+        for i in range(len(nos_unicos)):
+            for j in range(i + 1, len(nos_unicos)):
+                u, v = nos_unicos[i], nos_unicos[j]
+                if v in self.grafo.get_vizinhos(u):
+                    bonus_conexoes += self.grafo._grafo[u][v]
+
+        # O peso final é a média dos pesos dos nós ativos menos o bônus de conexão;
+        # (Subtraímos o bônus porque no Manchester menor número = maior urgência);
+        peso_medio = soma_pesos / len(set(nos_ativos))
+        peso_final = peso_medio - bonus_conexoes
+        
+        # Determina o nível Manchester baseado no peso final;
+        nivel_calculado = int(peso_final)
+        if nivel_calculado < 1: nivel_calculado = 1
+        if nivel_calculado > 5: nivel_calculado = 5
+        
+        # Busca a descrição da regra de maior prioridade disparada;
+        descricao = regras_disparadas[0]['descricao'] if regras_disparadas else "Triagem via Grafo"
+        
+        paciente.atualizar_prioridade(nivel_calculado, descricao)
+        self.log_inferencia(paciente.id, "GRAFO", f"Nível {nivel_calculado}", f"Peso Final: {peso_final:.2f} (Média: {peso_medio:.2f}, Bônus: {bonus_conexoes:.2f})")
             
     def _condicoes_regras_check(self, leitura: Dict[str, Any], regra: Dict[str, Any]) -> bool:
         '''
@@ -111,7 +153,6 @@ class MotorInferencia:
         if paciente.prioridade_atual == 3 and len(paciente.leituras) >= 2:
             l1 = paciente.get_penultima_leitura()
             l2 = paciente.get_ultima_leitura()
-            # Se a dor aumentou significativamente ou SpO2 caiu no nível 3;
             if l2.get('escala_dor', 0) > l1.get('escala_dor', 0) or l2.get('spo2', 100) < l1.get('spo2', 100):
                 paciente.atualizar_prioridade(2, regra['descricao'])
                 self.log_inferencia(paciente.id, regra['id'], 'Elevação Prioridade', regra['descricao'])

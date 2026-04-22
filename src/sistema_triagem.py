@@ -2,8 +2,10 @@ import sys
 import os
 from typing import List, Dict, Any
 from models.paciente import Paciente
+from models.grafo import Grafo
 from engine.motor_inferencia import MotorInferencia
 from engine.empate_breaker import EmpateBreaker
+from engine.base_conhecimento import GRAFO_URGENCIAS
 
 # Adiciona o diretório atual ao path para importações;
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -14,9 +16,26 @@ class SistemaTriagem:
     '''
     
     def __init__(self): 
-        self.motor = MotorInferencia()
+        self.grafo = self._inicializar_grafo()
+        self.motor = MotorInferencia(self.grafo)
         self.empate_breaker = EmpateBreaker()
         self.paciente: List[Paciente] = []
+        
+    def _inicializar_grafo(self) -> Grafo:
+        '''
+        Inicializa o TAD Grafo com os pesos e conexões da base de conhecimento;
+        '''
+        
+        g = Grafo()
+        # Adiciona nós e pesos;
+        for node, peso in GRAFO_URGENCIAS['nodes'].items():
+            g.add_ponto(node, peso)
+            
+        # Adiciona conexões (arestas);
+        for u, v, peso in GRAFO_URGENCIAS['edges']:
+            g.add_ponto_conexao(u, v, peso)
+            
+        return g
         
     def add_paciente(self, paciente_dado: Dict[str, Any]):
         '''
@@ -79,12 +98,6 @@ class SistemaTriagem:
         '''
         Exibe a fila de atendimento formatada;
         '''
-
-        def nome_resumido(nome_completo: str) -> str:
-            partes = nome_completo.split()
-            if len(partes) >= 2:
-                return f'{partes[0]} {partes[1]}'
-            return nome_completo
         
         fila = self.get_fila()
         print('\n' + '='*60)
@@ -98,7 +111,7 @@ class SistemaTriagem:
         for p in fila:
             
             vulneravel = 'Sim' if p.vuleravel else 'Não'
-            nome_exibicao = nome_resumido(p.id)
+            nome_exibicao = p.get_nome_exibicao()
             print(f'{nome_exibicao:<15} | {p.prioridade_atual:<10} | {colors[p.prioridade_atual]:<10} | {vulneravel:<5} | {p.hora_entrada}')
             
         print('='*60 + '\n')

@@ -42,6 +42,18 @@ class Paciente:
         '''
         
         self.leituras.append(leitura)
+
+    def get_nome_exibicao(self) -> str:
+        '''
+        Retorna nome resumido para exibição (primeiro e último);
+        '''
+
+        partes = [parte for parte in self.id.strip().split() if parte]
+        if not partes:
+            return self.id
+        if len(partes) == 1:
+            return partes[0]
+        return f'{partes[0]} {partes[-1]}'
         
     def atualizar_prioridade(self, novo_nivel: int, motivo: str):
         '''

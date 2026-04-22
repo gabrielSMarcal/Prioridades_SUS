@@ -93,7 +93,7 @@ def acao_atualizar_vituais(sistema: SistemaTriagem):
     print("\nPacientes cadastrados:")
     for i, paciente in enumerate(sistema.paciente, start=1):
         cor = cor_prioridade(paciente.prioridade_atual)
-        print(f" {i}. {paciente.id} ({cor})")
+        print(f" {i}. {paciente.get_nome_exibicao()} ({cor})")
 
     try:
         indice = int(input("Escolha o índice do paciente: "))

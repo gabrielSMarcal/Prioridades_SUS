@@ -1,5 +1,6 @@
 import sys
 import os
+from datetime import datetime, timedelta
 from src.sistema_triagem import SistemaTriagem
 from src.interface_usuario import (
     acao_cadastrar_paciente, 
@@ -16,6 +17,10 @@ def main():
     Ponto de entrada do sistema com menu Switch Case e pacientes iniciais;
     '''
     sistema = SistemaTriagem()
+    horario_base = datetime.now() - timedelta(minutes=30)
+    horario_p1 = horario_base.strftime('%H:%M')
+    horario_p2 = (horario_base + timedelta(minutes=15)).strftime('%H:%M')
+    horario_p3 = (horario_base + timedelta(minutes=30)).strftime('%H:%M')
     
     # 1. Dados dos Pacientes Iniciais (Regra de Negócio)
     pacientes_iniciais = [
@@ -24,24 +29,24 @@ def main():
             'idade': 72, # Vulnerável (Idoso)
             'gestante': False,
             'deficiencia': False,
-            'hora_entrada': '08:00',
-            'leituras': [{'hora': '08:00', 'spo2': 96, 'frequencia_cardiaca': 75, 'temperatura': 36.6, 'escala_dor': 2}]
+            'hora_entrada': horario_p1,
+            'leituras': [{'hora': horario_p1, 'spo2': 96, 'frequencia_cardiaca': 75, 'temperatura': 36.6, 'escala_dor': 2}]
         },
         {
             'id': 'Maria Souza Santos',
             'idade': 28,
             'gestante': True, # Vulnerável (Gestante)
             'deficiencia': False,
-            'hora_entrada': '08:15',
-            'leituras': [{'hora': '08:15', 'spo2': 98, 'frequencia_cardiaca': 82, 'temperatura': 37.0, 'escala_dor': 5}]
+            'hora_entrada': horario_p2,
+            'leituras': [{'hora': horario_p2, 'spo2': 98, 'frequencia_cardiaca': 82, 'temperatura': 37.0, 'escala_dor': 5}]
         },
         {
             'id': 'Carlos Eduardo Lima',
             'idade': 45,
             'gestante': False,
             'deficiencia': False,
-            'hora_entrada': '08:30',
-            'leituras': [{'hora': '08:30', 'spo2': 88, 'frequencia_cardiaca': 110, 'temperatura': 38.2, 'escala_dor': 8}]
+            'hora_entrada': horario_p3,
+            'leituras': [{'hora': horario_p3, 'spo2': 88, 'frequencia_cardiaca': 110, 'temperatura': 38.2, 'escala_dor': 8}]
         }
     ]
     
