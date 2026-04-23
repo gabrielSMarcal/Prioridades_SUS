@@ -46,7 +46,7 @@ def main():
             'gestante': False,
             'deficiencia': False,
             'hora_entrada': horario_p3,
-            'leituras': [{'hora': horario_p3, 'spo2': 88, 'frequencia_cardiaca': 110, 'temperatura': 38.2, 'escala_dor': 8}]
+            'leituras': [{'hora': horario_p3, 'spo2': 88, 'frequencia_cardiaca': 80, 'temperatura': 36.2, 'escala_dor': 1}]
         }
     ]
     

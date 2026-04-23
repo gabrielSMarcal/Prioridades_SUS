@@ -96,11 +96,18 @@ class MotorInferencia:
         if nivel_calculado < 1: nivel_calculado = 1
         if nivel_calculado > 5: nivel_calculado = 5
         
-        # Busca a descrição da regra de maior prioridade disparada;
-        descricao = regras_disparadas[0]['descricao'] if regras_disparadas else "Triagem via Grafo"
+        # Busca a descrição da regra primária mais urgente disparada (menor nível numérico);
+        regra_mais_urgente = min(regras_disparadas, key=lambda r: r.get('nivel', 5)) if regras_disparadas else None
+        descricao = regra_mais_urgente['descricao'] if regra_mais_urgente else "Triagem sem regra primária"
+        regra_ids = '+'.join(regra['id'] for regra in regras_disparadas) if regras_disparadas else 'R0'
         
         paciente.atualizar_prioridade(nivel_calculado, descricao)
-        self.log_inferencia(paciente.id, "GRAFO", f"Nível {nivel_calculado}", f"Peso Final: {peso_final:.2f} (Média: {peso_medio:.2f}, Bônus: {bonus_conexoes:.2f})")
+        self.log_inferencia(
+            paciente.id,
+            regra_ids,
+            f"Nível {nivel_calculado}",
+            f"Classificação por regras primárias com TAD Grafo (Peso Final: {peso_final:.2f}, Média: {peso_medio:.2f}, Bônus: {bonus_conexoes:.2f})"
+        )
             
     def _condicoes_regras_check(self, leitura: Dict[str, Any], regra: Dict[str, Any]) -> bool:
         '''
